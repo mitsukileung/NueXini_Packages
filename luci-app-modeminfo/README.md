@@ -20,16 +20,31 @@ Supported devices:
  
  - MikroTik R11e-LTE/R11e-LTE6
 
- - Fibocom L850/L860
+ - Fibocom NL668/NL678/L850/L860
 
- - Fibocom NL668/NL678
 
 
 Compiled OpenWrt 18.06-19.07 version [luci-app-modeminfo_0.2.3-1_all.ipk](http://openwrt.132lan.ru/packages/packages-19.07/luci/luci-app-modeminfo_0.2.3-1_all.ipk)
 
-Compiled OpenWrt 21.02 version [luci-app-modeminfo_0.2.4-0_all.ipk](http://openwrt.132lan.ru/packages/packages-21.02/luci/luci-app-modeminfo_0.2.4-0_all.ipk)
+Compiled OpenWrt 21.02 version [luci-app-modeminfo_0.2.5-0_all.ipk](http://openwrt.132lan.ru/packages/packages-21.02/luci/luci-app-modeminfo_0.2.5-0_all.ipk)
 
 Сompiled old versions https://inf.labz.ru/repo/
+
+
+# How-To compile
+
+add git repo in feeds.conf.default OpenWrt SDK
+
+```
+src-git modeminfo https://github.com/koshev-msk/luci-app-modeminfo.git
+```
+
+update feeds and compile package. E.g
+
+```
+./scripts/feeds update -a && ./scripts feeds install -a
+make -j$((`nproc`+1)) package/feeds/modeminfo/luci-app-modeminfo/compile
+```
 
 
 <details>
