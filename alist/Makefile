@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=2.6.1
-PKG_WEB_VERSION:=2.6.0
-PKG_RELEASE:=2
+PKG_VERSION:=2.6.3
+PKG_WEB_VERSION:=2.6.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=abc4b68ff5166998da3615a673570e87f65fc1667a4fd820977b20afee6c4fa8
+PKG_HASH:=ec807c1e35d5958d4039b3b5506abab0a5f24656dab8e443c800eb51243e97e8
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -23,7 +23,7 @@ define Download/$(PKG_NAME)-web
   FILE:=$(PKG_NAME)-web-$(PKG_WEB_VERSION).tar.gz
   URL_FILE:=dist.tar.gz
   URL:=https://github.com/alist-org/web-v2/releases/download/$(PKG_WEB_VERSION)/
-  HASH:=d11099a302cf2c4be54f56c79aa77838c4d1ede487bc42f0c8a6cca9588971f2
+  HASH:=6e082bf76b936739abe33b7b1a20c967cacaf928fa8e7f75b3b5d4415dced0b7
 endef
 
 PKG_CONFIG_DEPENDS:=CONFIG_ALIST_COMPRESS_UPX
@@ -63,18 +63,6 @@ config ALIST_COMPRESS_UPX
 	default n
 endef
 
-define Package/$(PKG_NAME)/conffiles
-/etc/alist/
-/etc/config/alist
-endef
-
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	[ -f /etc/uci-defaults/alist ] && /etc/uci-defaults/alist && rm -f /etc/uci-defaults/alist
-fi
-endef
-
 define Build/Prepare
 	$(call Build/Prepare/Default)
 	$(eval $(call Download,$(PKG_NAME)-web))
@@ -90,12 +78,8 @@ endif
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/etc/alist $(1)/etc/config $(1)/etc/init.d $(1)/etc/uci-defaults $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/alist $(1)/usr/bin
-	$(INSTALL_CONF) ./files/alist.config $(1)/etc/config/alist
-	$(INSTALL_BIN) ./files/alist.init $(1)/etc/init.d/alist
-	$(INSTALL_BIN) ./files/alist.uci-default $(1)/etc/uci-defaults/alist
-	$(INSTALL_CONF) ./files/data.db $(1)/etc/alist/data.db
 endef
 
 $(eval $(call GoBinPackage,$(PKG_NAME)))

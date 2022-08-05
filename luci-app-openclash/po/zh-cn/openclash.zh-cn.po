@@ -255,26 +255,26 @@ msgstr "启用将覆盖配置文件内的设置，请先在下方配置好服务
 msgid "DNS Server Group"
 msgstr "服务器分组"
 
-msgid "(NameServer Group Must Be Set)"
-msgstr "(NameServer 组必须设置)"
+msgid "NameServer Group Must Be Set"
+msgstr "NameServer 组必须设置"
 
 msgid "DNS Server Address"
 msgstr "服务器地址"
 
-msgid "(Do Not Add Type Ahead)"
-msgstr "(请勿添加类型前缀)"
+msgid "Do Not Add Type Ahead"
+msgstr "请勿添加类型前缀"
 
 msgid "DNS Server Port"
 msgstr "服务器端口"
 
-msgid "(Require When Use Non-Standard Port)"
-msgstr "(使用非标准端口时必须填写)"
+msgid "Require When Use Non-Standard Port"
+msgstr "使用非标准端口时必须填写"
 
 msgid "DNS Server Type"
 msgstr "服务器类型"
 
-msgid "(Communication protocol)"
-msgstr "(通讯协议)"
+msgid "Communication protocol"
+msgstr "通讯协议"
 
 msgid "Proxy IPv6 Traffic"
 msgstr "IPv6 流量代理"
@@ -2056,8 +2056,8 @@ msgstr "守护程序：已尝试自动重启三次 Clash 内核，为防止频�
 msgid "Watchdog: Log Size Limit, Clean Up All Log Records..."
 msgstr "守护程序：因日志大小限制，清理所有日志内容..."
 
-msgid "Watchdog: Reset Firewall For Enabling Redirect..."
-msgstr "守护程序：检测到转发规则顺序错误，重置插件防火墙规则..."
+msgid "Watchdog: Setting Firewall For Enabling Redirect..."
+msgstr "守护程序：检测到转发规则顺序错误，修改插件防火墙规则..."
 
 msgid "Watchdog: Force Reset DNS Hijack..."
 msgstr "守护程序：重新设置 Dnsmasq 的 DNS 转发选项..."
@@ -2420,7 +2420,7 @@ msgid "Core Log"
 msgstr "内核日志"
 
 msgid "Append Upstream DNS"
-msgstr "追加上游DNS"
+msgstr "追加上游 DNS"
 
 msgid "Append The Upstream Assigned DNS And Gateway IP To The Nameserver"
 msgstr "将上游分配的 DNS 和网关 IP 追加到 Nameserver"
@@ -2569,6 +2569,9 @@ msgstr "提示：开始自动选择（检测）Paramount Plus 解锁节点..."
 msgid "Tip: Start Auto Select Proxy For Discovery Plus Unlock..."
 msgstr "提示：开始自动选择（检测）Discovery Plus 解锁节点..."
 
+msgid "Tip: Start Auto Select Proxy For Bilibili Unlock..."
+msgstr "提示：开始自动选择（检测）Bilibili 解锁节点..."
+
 msgid "Netflix Group:"
 msgstr "Netflix 策略组："
 
@@ -2601,6 +2604,9 @@ msgstr "Paramount Plus 策略组："
 
 msgid "Discovery Plus Group:"
 msgstr "Discovery Plus 策略组："
+
+msgid "Bilibili Group:"
+msgstr "Bilibili 策略组："
 
 msgid "full support."
 msgstr "完整解锁。"
@@ -2665,17 +2671,29 @@ msgstr "根据关键字搜索且自动获取策略组失败，请确认关键字
 msgid "unlock node auto selected failed, no node match the regex, rolled back to other full support node"
 msgstr "解锁节点自动选择失败，未找到区域匹配的节点，回退到其他区域的解锁节点"
 
+msgid "unlock node auto selected successfully, no node match the old region, rolled back to other full support node"
+msgstr "解锁节点自动选择成功，未找到与先前解锁区域匹配的节点，回退到其他区域且符合条件的解锁节点"
+
 msgid "full support but not match the regex!"
 msgstr "完整解锁但区域不匹配！"
 
+msgid "full support but not match the old region!"
+msgstr "完整解锁但与先前解锁区域不匹配！"
+
 msgid "but not match the regex! the type of group is not select, auto select could not work!"
 msgstr "完整解锁但区域不匹配！当前策略组类型非 Select，无法进行自动选择！"
+
+msgid "but not match the old region! the type of group is not select, auto select could not work!"
+msgstr "完整解锁但与先前解锁区域不匹配！当前策略组类型非 Select，无法进行自动选择！"
 
 msgid "full support but not match the regex! start auto select unlock proxy..."
 msgstr "完整解锁但区域不匹配！开始进行解锁节点自动选择..."
 
 msgid "unlock node test finished, rolled back to the full support node"
 msgstr "解锁检测完成，回退到完整解锁的节点"
+
+msgid "unlock node test finished, no node match the old region, rolled back to other full support node"
+msgstr "解锁检测完成，未找到与先前解锁区域匹配的节点，回退到其他区域的解锁节点"
 
 msgid "unlock node test finished, no node match the regex, rolled back to other full support node"
 msgstr "解锁检测完成，未找到区域匹配的节点，回退到其他区域的解锁节点"
@@ -2959,8 +2977,14 @@ msgstr "警告：跳过核心不支持的自定义规则"
 msgid "Specific Interface"
 msgstr "指定接口"
 
+msgid "DNS Lookup Only Through The Specific Interface"
+msgstr "DNS 仅通过特定接口进行查询"
+
 msgid "Specific Group"
 msgstr "指定策略组"
+
+msgid "Group Use For Proxy The DNS"
+msgstr "用于代理此 DNS 的策略组"
 
 msgid "Warning: Only Meta Core Support Specific Group, Skip Setting"
 msgstr "警告：仅 Meta 内核支持指定 DNS 的策略组，跳过设置"
@@ -2968,11 +2992,17 @@ msgstr "警告：仅 Meta 内核支持指定 DNS 的策略组，跳过设置"
 msgid "Node Domain Resolve"
 msgstr "节点域名解析"
 
+msgid "Use For Node Domain Resolve"
+msgstr "用于解析节点域名的 IP 地址"
+
 msgid "Warning: Only Meta Core Support proxy-server-nameserver, Skip Setting"
 msgstr "警告：仅 Meta 内核支持设置解析节点域名的 DNS，跳过设置"
 
 msgid "Warning: Meta Core not Support Specific Interface, Skip Setting"
 msgstr "警告：Meta 内核不支持设置指定 DNS 的出口，跳过设置"
+
+msgid "Warning: Only Meta Core Support Force HTTP/3 to connect, Skip Setting"
+msgstr "警告：仅 Meta 内核支持 DOH 强制启用 HTTP/3，跳过设置"
 
 msgid "Lan Bypassed Port List"
 msgstr "绕过核心的来源端口"
@@ -2989,11 +3019,80 @@ msgstr "本地 IPv6 绕过地址"
 msgid "The Traffic of The Destination For The Specified Address Will Not Pass The Core"
 msgstr "目的地为指定地址的流量不会通过核心"
 
-msgid "Mutual Exclusion With down_mbps"
-msgstr "与 down_mbps 二选一进行设置"
-
-msgid "Mutual Exclusion With up_mbps"
-msgstr "与 up_mbps 二选一进行设置"
-
 msgid "Only Meta Core Support SS2022"
 msgstr "仅 Meta 内核支持 SS2022"
+
+msgid "Force HTTP/3"
+msgstr "强制 HTTP/3"
+
+msgid "Force HTTP/3 to connect"
+msgstr "强制使用 HTTP/3 进行连接"
+
+msgid "Control Panel"
+msgstr "控制面板"
+
+msgid "Unzip Error!"
+msgstr "解压失败！"
+
+msgid "Unzip Error"
+msgstr "解压失败"
+
+msgid "Switch To Official Version"
+msgstr "切换至官方版本"
+
+msgid "Switch To Meta Version"
+msgstr "切换至 Meta 版本"
+
+msgid "Switch(Update) Dashboard Version"
+msgstr "切换（更新） Dashboard 版本"
+
+msgid "Switch(Update) Yacd Version"
+msgstr "切换（更新） Yacd 版本"
+
+msgid "Downloading File..."
+msgstr "文件下载中..."
+
+msgid "Switch Failed"
+msgstr "切换失败"
+
+msgid "Switch Successful"
+msgstr "切换成功"
+
+msgid "Close Old Connections"
+msgstr "关闭旧链接"
+
+msgid "Automatically Close Old Connections When New Unlock Node Selected"
+msgstr "解锁节点切换时关闭对应策略组的所有旧链接"
+
+msgid "Append Default DNS"
+msgstr "追加默认 DNS"
+
+msgid "Automatically Append Compliant DNS to default-nameserver"
+msgstr "自动将符合要求的 DNS 追加到 default-nameserver"
+
+msgid "China Mainland Only"
+msgstr "大陆限定"
+
+msgid "Hongkong/Macau/Taiwan"
+msgstr "港澳台限定"
+
+msgid "Taiwan Only"
+msgstr "台湾限定"
+
+msgid "Backup Section"
+msgstr "插件备份"
+
+msgid "Backup Exclude Cores"
+msgstr "不备份内核"
+
+msgid "Backup Core"
+msgstr "仅备份内核"
+
+msgid "Backup Config"
+msgstr "仅备份配置文件"
+
+msgid "Backup Rule Provider"
+msgstr "仅备份规则集"
+
+msgid "Backup Proxy Provider"
+msgstr "仅备份代理集"
