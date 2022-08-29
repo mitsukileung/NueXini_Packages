@@ -1,15 +1,20 @@
 'use strict';
-'require view';
-'require poll';
+'require form';
 'require fs';
+'require view';
+'require ui';
+'require uci';
+'require poll';
+'require dom';
+'require tools.widgets as widgets';
 
 /*
 	Copyright 2021-2022 Rafał Wabik - IceG - From eko.one.pl forum
 	
 	rssi/rsrp/rsrq/sinnr formulas for percentages taken from
 	https://github.com/koshev-msk/luci-app-modeminfo
-*/
 
+*/
 
 function csq_bar(v, m) {
 var pg = document.querySelector('#csq')
@@ -171,8 +176,37 @@ pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
 }
 
 return view.extend({
-	render: function() {
-		poll.add(function() {
+	formdata: { threeginfo: {} },
+
+	load: function() {
+		return L.resolveDefault(fs.exec_direct('/usr/share/3ginfo-lite/3ginfo.sh', [ 'json' ]));
+	},
+
+	render: function(data) {
+		var m, s, o;
+
+		if (data != null){
+		try {
+
+		var json = JSON.parse(data);
+
+		if(!json.hasOwnProperty('error')){
+
+					if (json.signal == '0' || json.signal == '') {
+						L.ui.showModal(_('3ginfo-lite'), [
+						E('p', { 'class': 'spinning' }, _('Waiting to read data from the modem...'))
+						]);
+
+						window.setTimeout(function() {
+						location.reload();
+						//L.hideModal();
+						}, 30000).finally();
+					}
+					else {
+					L.hideModal();
+					}
+		
+		pollData: poll.add(function() {
 			return L.resolveDefault(fs.exec_direct('/usr/share/3ginfo-lite/3ginfo.sh', 'json'))
 			.then(function(res) {
 				var json = JSON.parse(res);
@@ -185,7 +219,7 @@ return view.extend({
 						window.setTimeout(function() {
 						location.reload();
 						//L.hideModal();
-						}, 25000).finally();
+						}, 30000).finally();
 					}
 					else {
 					L.hideModal();
@@ -464,12 +498,12 @@ return view.extend({
 					if (document.getElementById('lac')) {
 						var view = document.getElementById("lac");
 						if (json.lac_dec == '' || json.lac_hex == '') { 
-						var lc = json.lac_hex   + ' ' + json.lac_dec;
+						var lc = json.lac_dec   + ' ' + json.lac_hex;
 						var ld = lc.split(' ').join('');
 						view.textContent = ld;
 						}
 						else {
-						view.textContent = json.lac_hex   + ' (' + json.lac_dec + ')' ;
+						view.textContent = json.lac_dec   + ' (' + json.lac_hex + ')';
 						}
 
 					}
@@ -480,27 +514,29 @@ return view.extend({
 						view.textContent = '-';
 						}
 						else {
-						if (json.tac_hex == json.lac_hex) {
-						view.textContent = json.tac_hex + ' (' + json.lac_dec + ')' ;
-						}
-						else {
-						view.textContent = json.tac_hex + ' (' + json.tac_dec + ')' ;
-						}
-						if (json.tac_dec == '' || json.tac_hex == '') {
-						view.textContent = json.lac_hex   + ' (' + json.lac_dec + ')' ;
-						}
+							if (json.tac_hex == null || json.tac_hex == '' || json.tac_hex == '-') {
+							view.textContent = json.tac_d + ' (' + json.tac_h + ')';
+							}
+							else {
+								view.textContent = json.tac_dec + ' (' + json.tac_hex + ')';
+								if (json.tac_hex == json.lac_hex && json.tac_dec == '') {
+									view.textContent = json.lac_dec + ' (' + json.tac_hex + ')';
+								}
+
+							}
 						}
 					}
 
 					if (document.getElementById('cid')) {
 						var view = document.getElementById("cid");
 						if (json.cid_dec == '' || json.cid_hex == '') { 
-						var cc = json.cid_hex   + ' ' + json.cid_dec;
+						var cc = json.cid_dec   + ' ' + json.cid_hex;
 						var cd = cc.split(' ').join('');
 						view.textContent = cd;
 						}
 						else {
-						view.textContent = json.cid_hex   + ' (' + json.cid_dec + ')' ;
+
+						view.textContent = json.cid_dec   + ' (' + json.cid_hex + ')' ;
 						}
 					}
 
@@ -510,47 +546,70 @@ return view.extend({
 						view.textContent = '-';
 						}
 						else {
-						view.textContent = json.pband;
+						view.textContent = json.pband + ' | ' +json.pci + ' ' + json.earfcn;
 						}
 					}
 
-					if (document.getElementById('pci')) {
-						var view = document.getElementById("pci");
-						if (json.pci == '') { 
+					if (document.getElementById('s1band')) {
+						var view = document.getElementById("s1band");
+						if (json.s1band == '') { 
 						view.textContent = '-';
 						}
 						else {
-						view.textContent = json.pci + ' ' + json.earfcn;
+						view.textContent = json.s1band + ' | ' + json.s1pci + ' ' + json.s1earfcn;
 						}
 					}
-
-					if (document.getElementById('sband')) {
-						var view = document.getElementById("sband");
-						if (json.sband == '') { 
+					
+					if (document.getElementById('s2band')) {
+						var view = document.getElementById("s2band");
+						if (json.s2band == '') { 
 						view.textContent = '-';
 						}
 						else {
-						view.textContent = json.sband;
+						view.textContent = json.s2band + ' | ' + json.s2pci + ' ' + json.s2earfcn;
 						}
 					}
-
-					if (document.getElementById('spci')) {
-						var view = document.getElementById("spci");
-						if (json.spci == '') { 
+					
+					if (document.getElementById('s3band')) {
+						var view = document.getElementById("s3band");
+						if (json.s3band == '') { 
 						view.textContent = '-';
 						}
 						else {
-						view.textContent = json.spci + ' ' + json.searfcn;
+						view.textContent = json.s3band + ' | ' + json.s3pci + ' ' + json.s3earfcn;
 						}
 					}
-
+					if (document.getElementById('s4band')) {
+						var view = document.getElementById("s4band");
+						if (json.s4band == '') { 
+						view.textContent = '-';
+						}
+						else {
+						view.textContent = json.s4band + ' | ' + json.s4pci + ' ' + json.s4earfcn;
+						}
+					}
 
 			});
-		});
-		return E([], [
-			E('h2', {}, [ _('3ginfo-lite') ]),
-			E('div', { class: 'cbi-section-descr' }, _('More information about the 3ginfo on the')+ ' <a href="https://eko.one.pl/?p=openwrt-3ginfo" target="_blank">' + _('eko.one.pl forum') + '</a>.'),
-			E('h4', {}, [ _('General Information') ]),
+		});		}		
+		else {
+			// Error
+		}
+
+			} catch (err) {
+  				console.log('Error: ', err.message);
+			}
+
+		}		
+
+		var info = _('More information about the 3ginfo on the') + ' <a href="https://eko.one.pl/?p=openwrt-3ginfo" target="_blank">' + _('eko.one.pl forum') + '</a>.';
+		m = new form.JSONMap(this.formdata, _('3ginfo-lite'), info);
+
+		s = m.section(form.TypedSection, '3ginfo', '', _(''));
+		s.anonymous = true;
+
+		s.render = L.bind(function(view, section_id) {
+			return E('div', { 'class': 'cbi-section' }, [
+				E('h4', {}, [ _('General Information') ]),
 			E('table', { 'class': 'table' }, [
 				E('tr', { 'class': 'tr' }, [
 					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Signal strength:')]),
@@ -601,24 +660,27 @@ return view.extend({
 			E('h4', {}, [ _('Cell / Signal Information') ]),
 			E('table', { 'class': 'table' }, [
 				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('MCC MNC: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('MCC MNC:')]),
 					E('td', { 'class': 'td left', 'id': 'mccmnc' }, [ '-' ]),
 					]),
 				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('LAC: ')]),
-					E('td', { 'class': 'td left', 'id': 'lac' }, [ '-' ]),
-					]),
-				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Cell ID: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Cell ID:')]),
 					E('td', { 'class': 'td left', 'id': 'cid' }, [ '-' ]),
 					]),
 				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('TAC: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('TAC:')]),
 					E('td', { 'class': 'td left', 'id': 'tac' }, [ '-' ]),
+					]),
+				E('tr', { 'class': 'tr' }, [
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('LAC:')]),
+					E('td', { 'class': 'td left', 'id': 'lac' }, [ '-' ]),
 					]),
 
 				E('tr', { 'id': 'csqn', 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CSQ: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [
+					_('CSQ:'),
+					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Signal Strength)') ]),
+					]),
 					E('td', { 'class': 'td' }, E('div', {
 							'id': 'csq',
 							'class': 'cbi-progressbar',
@@ -627,7 +689,10 @@ return view.extend({
 						))
 					]),
 				E('tr', { 'id': 'rssin', 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('RSSI: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [
+					_('RSSI:'),
+					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Received Signal Strength Indicator)') ]),
+					]),
 					E('td', { 'class': 'td' }, E('div', {
 							'id': 'rssi',
 							'class': 'cbi-progressbar',
@@ -636,7 +701,10 @@ return view.extend({
 						))
 					]),
 				E('tr', { 'id': 'rsrpn', 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('RSRP: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [
+					_('RSRP:'),
+					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Reference Signal Receive Power)') ]),
+					]),
 					E('td', { 'class': 'td' }, E('div', {
 							'id': 'rsrp',
 							'class': 'cbi-progressbar',
@@ -645,7 +713,10 @@ return view.extend({
 						))
 					]),
 				E('tr', { 'id': 'sinrn', 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('SINR: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [
+					_('SINR:'),
+					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Signal to Interference plus Noise Ratio)') ]),
+					]),
 					E('td', { 'class': 'td' }, E('div', {
 							'id': 'sinr',
 							'class': 'cbi-progressbar',
@@ -654,7 +725,10 @@ return view.extend({
 						))
 					]),
 				E('tr', { 'id': 'rsrqn', 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('RSRQ: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [
+					_('RSRQ:'),
+					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Reference Signal Received Quality)') ]),
+					]),
 					E('td', { 'class': 'td' }, E('div', {
 							'id': 'rsrq',
 							'class': 'cbi-progressbar',
@@ -662,27 +736,88 @@ return view.extend({
 							}, E('div')
 						))
 					]),
+
 				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Primary band: ')]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Primary band | PCI & EARFCN:')]),
 					E('td', { 'class': 'td left', 'id': 'pband' }, [ '-' ]),
 					]),
 				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('PCI & EARFCN: ')]),
-					E('td', { 'class': 'td left', 'id': 'pci' }, [ '-' ]),
-					]),
-
-				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('(S) band: ')]),
-					E('td', { 'class': 'td left', 'id': 'sband' }, [ '-' ]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (S1):')]),
+					E('td', { 'class': 'td left', 'id': 's1band' }, [ '-' ]),
 					]),
 				E('tr', { 'class': 'tr' }, [
-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('(S) PCI & (S) EARFCN: ')]),
-					E('td', { 'class': 'td left', 'id': 'spci' }, [ '-' ]),
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (S2):')]),
+					E('td', { 'class': 'td left', 'id': 's2band' }, [ '-' ]),
 					]),
-			]),
+				E('tr', { 'class': 'tr' }, [
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (S3):')]),
+					E('td', { 'class': 'td left', 'id': 's3band' }, [ '-' ]),
+					]),
+				E('tr', { 'class': 'tr' }, [
+					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (S4):')]),
+					E('td', { 'class': 'td left', 'id': 's4band' }, [ '-' ]),
+					]),
 
-		]);
+				])
+			]);
+		}, o, this);
+
+		s = m.section(form.TypedSection, 'threeginfo', _(''));
+		s.anonymous = true;
+		s.addremove = false;
+
+		s.tab('opt1', _('BTS Search'));
+		s.anonymous = true;
+
+		o = s.taboption('opt1', form.Button, '_search');
+		o.title      = _('Search BTS using Cell ID');
+		o.inputtitle = _('Search');
+		o.onclick = function() {
+
+		return uci.load('3ginfo').then(function() {
+		var searchsite = (uci.get('3ginfo', '@3ginfo[0]', 'website'));
+
+			if (searchsite.includes('btsearch')) {
+			//http://www.btsearch.pl/szukaj.php?mode=std&search=CellID
+
+			window.open(searchsite + json.cid_dec);
+			}
+
+			if (searchsite.includes('lteitaly')) {
+			//https://lteitaly.it/internal/map.php#bts=MCCMNC.CellIDdiv256
+
+			var zzmnc = json.operator_mnc;
+			var first = zzmnc.slice(0, 1);
+			var second = zzmnc.slice(1, 2);
+			var zzcid = Math.round(json.cid_dec/256);
+				if ( zzmnc.length == 3 ) {
+				if (first.includes('0')) {
+				var cutmnc = zzmnc.slice(1, 3);
+				}
+				if (first.includes('0') && second.includes('0')) {
+				var cutmnc = zzmnc.slice(2, 3);
+				}
+				}
+				if ( zzmnc.length == 2 ) {
+				var first = zzmnc.slice(0, 1);
+				if (first.includes('0')) {
+				var cutmnc = zzmnc.slice(1, 2);
+				}
+				}
+				if ( zzmnc.length < 2 || !first.includes('0') && !second.includes('0')) {
+				var cutmnc = zzmnc;
+			}
+
+			window.open(searchsite + json.operator_mcc + cutmnc + '.' + zzcid);
+			}
+
+    		});
+
+		};
+
+		return m.render();
 	},
+
 	handleSaveApply: null,
 	handleSave: null,
 	handleReset: null

@@ -13,6 +13,9 @@ band() {
 		7) echo "${2}B7 (2600 MHz)";;
 		8) echo "${2}B8 (900 MHz)";;
 		20) echo "${2}B20 (800 MHz)";;
+                28) echo "${2}B28 (700 MHz)";;
+                32) echo "${2}B32 (1500 MHz)";;
+                38) echo "${2}B38 (2600 MHz)";;		
 		*) echo "$1";;
 	esac
 }
@@ -218,8 +221,15 @@ else
 
 _DEVS=$(awk '/Vendor=/{gsub(/.*Vendor=| ProdID=| Rev.*/,"");print}' /sys/kernel/debug/usb/devices | sort -u)
 for _DEV in $_DEVS; do
-	if [ -e "$RES/3ginfo-addon/$_DEV" ]; then
-		. "$RES/3ginfo-addon/$_DEV"
+if [ -e "$RES/3ginfo-addon/$_DEV" ]; then
+		case $(cat /tmp/sysinfo/board_name) in
+		"zte,mf289f")
+			. "$RES/3ginfo-addon/19d21485"
+			;;
+		*)
+			. "$RES/3ginfo-addon/$_DEV"
+			;;
+		esac
 		break
 	fi
 done
@@ -248,19 +258,29 @@ cat <<EOF
 "lac_hex":"$LAC_HEX",
 "tac_dec":"$TAC_DEC",
 "tac_hex":"$TAC_HEX",
+"tac_h":"$T_HEX",
+"tac_d":"$T_DEC",
 "cid_dec":"$CID_DEC",
 "cid_hex":"$CID_HEX",
 "pci":"$PCI",
 "earfcn":"$EARFCN",
 "pband":"$PBAND",
-"sband":"$SBAND",
-"spci":"$SPCI",
-"searfcn":"$SEARFCN",
+"s1band":"$S1BAND",
+"s1pci":"$S1PCI",
+"s1earfcn":"$S1EARFCN",
+"s2band":"$S2BAND",
+"s2pci":"$S2PCI",
+"s2earfcn":"$S2EARFCN",
+"s3band":"$S3BAND",
+"s3pci":"$S3PCI",
+"s3earfcn":"$S3EARFCN",
+"s4band":"$S4BAND",
+"s4pci":"$S4PCI",
+"s4earfcn":"$S4EARFCN",
 "rsrp":"$RSRP",
 "rsrq":"$RSRQ",
 "rssi":"$RSSI",
-"sinr":"$SINR",
-"addon":[$ADDON]
+"sinr":"$SINR"
 }
 EOF
 exit 0

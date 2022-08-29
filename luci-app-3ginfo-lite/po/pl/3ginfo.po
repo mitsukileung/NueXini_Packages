@@ -131,3 +131,25 @@ msgstr "Oczekiwanie na odczyt danych z modemu..."
 
 msgid "Waiting for connection data..."
 msgstr "Oczekiwanie na dane połączenia..."
+
+msgid "BTS Search"
+msgstr "Lokalizacja stacji bazowej"
+
+msgid "Search"
+msgstr "Szukaj"
+
+msgid "Search BTS using Cell ID"
+msgstr "Wyszukaj BTS po Cell ID"
+
+msgid "Hint: To set up a BTS search engine, all you have to do is select the dedicated website for your location."
+msgstr "Wskazówka: Aby skonfigurować wyszukiwarkę BTS, wystarczy wybrać stronę odpowiednią dla swojej lokalizacji."
+
+msgid "BTS search settings"
+msgstr "Ustawienia wyszukiwania stacji bazowej"
+
+msgid "Website to search for BTS"
+msgstr "Strona do wyszukiwania BTS"
+
+msgid "Select a website for searching."
+msgstr "Wybierz stronę internetową służącą do wyszukiwania."
+
