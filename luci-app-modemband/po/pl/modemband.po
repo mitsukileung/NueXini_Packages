@@ -10,8 +10,12 @@ msgstr "Ustawione pasma LTE:"
 msgid "Supported LTE bands:"
 msgstr "Obsługiwane pasma LTE:"
 
-msgid "Configuration modem frequency bands. More information about the modemband application on the"
-msgstr "Konfiguracja preferowanych pasm modemu. Więcej informacji o aplikacji modemband na"
+msgid ""
+"Configuration modem frequency bands. More "
+"information about the modemband application on the %seko.one.pl forum%s."
+msgstr ""
+"Konfiguracja preferowanych pasm modemu. Więcej "
+"informacji o aplikacji modemband na %sforum eko.one.pl%s."
 
 msgid "Configure modem bands"
 msgstr "Konfiguracja pasm LTE"
@@ -24,9 +28,6 @@ msgstr "Modyfikacja pasm:"
 
 msgid "Modem information"
 msgstr "Informacje o modemie"
-
-msgid "eko.one.pl forum"
-msgstr "forum eko.one.pl"
 
 msgid "The new bands settings have been sent to the modem. If the changes are not visible, a restart of the connection, modem or router may be required."
 msgstr "Nowe ustawienia pasm zostały wysłane do modemu. Jeśli zmiany nie są widoczne, może być wymagane ponowne uruchomienie połączenia, modemu lub routera."
@@ -177,4 +178,22 @@ msgstr "Obsługiwane pasma zależą od regionu w którym pracuje modem. Modyfiku
 
 msgid "Waiting to read data from the modem..."
 msgstr "Oczekiwanie na odczyt danych z modemu..."
+
+msgid "Edit"
+msgstr "Edycja"
+
+msgid "Template loaded"
+msgstr "Wczytany szablon"
+
+msgid "Refresh the view"
+msgstr "Odśwież widok"
+
+msgid "Reload"
+msgstr "Wczytaj ponownie"
+
+msgid "Select the modem settings file"
+msgstr "Wybierz plik ustawień modemu"
+
+msgid "Select the template assigned to the VID and PID of the modem IDs on the USB bus."
+msgstr "Wybierz szablon przypisany do VID i PID identyfikatorów modemu na magistrali USB."
 

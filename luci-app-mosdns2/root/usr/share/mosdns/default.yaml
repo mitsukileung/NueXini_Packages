@@ -37,6 +37,10 @@ data_providers:
     file: "/etc/mosdns/rule/local-ptr.txt"
     auto_reload: true
 
+  - tag: adlist
+    file: "/etc/mosdns/rule/adlist.txt"
+    auto_reload: true
+
 plugins:
   - tag: lazy_cache
     type: cache
@@ -51,19 +55,18 @@ plugins:
       maximum_ttl: maximum_ttl_custom
 
   - tag: "forward_local"
-    type: fast_forward
+    type: forward
     args:
       upstream:
         - addr: local_dns
+      bootstrap:
+        - "bootstrap_dns"
 
   - tag: "forward_remote"
     type: fast_forward
     args:
       upstream:
-        - addr: remote_dns1
-          enable_pipeline: remote_dns_pipeline
-        - addr: remote_dns2
-          enable_pipeline: remote_dns_pipeline
+        - addr: remote_dns
 
   - tag: query_is_whitelist_domain
     type: query_matcher
@@ -99,7 +102,7 @@ plugins:
     type: query_matcher
     args:
       domain:
-        - "provider:geosite:cn,apple-cn,icloud,google-cn,tld-cn"
+        - "provider:geosite:cn"
 
   - tag: query_is_non_local_domain
     type: query_matcher
@@ -135,6 +138,7 @@ plugins:
     type: "sequence"
     args:
       exec:
+        - _misc_optm
         - query_is_hosts_domain
         - query_is_redirect_domain
 

@@ -7,7 +7,7 @@
 'require tools.widgets as widgets'
 
 /*
-	Copyright 2022 Rafał Wabik - IceG - From eko.one.pl forum
+	Copyright 2022-2023 Rafał Wabik - IceG - From eko.one.pl forum
 */
 
 return view.extend({
@@ -29,7 +29,7 @@ return view.extend({
 		o = s.option(widgets.DeviceSelect, 'iface', _('Interface'),
 		_('Network interface for Internet access.')
 		);
-		o.noaliases  = true;
+		o.noaliases  = false;
 		o.default = 'wan';
 
 		o = s.option(form.Value, 'set_port', _('Port for communication with the modem'), 

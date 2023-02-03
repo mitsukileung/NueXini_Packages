@@ -10,11 +10,11 @@ include $(TOPDIR)/rules.mk
 PKG_ARCH_quickstart:=$(ARCH)
 
 PKG_NAME:=quickstart
-PKG_VERSION:=0.5.7
-PKG_RELEASE:=2
+PKG_VERSION:=0.6.4
+PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://fw.koolcenter.com/binary/quickstart/
-PKG_HASH:=87e3f9217b750e112ff13576300fc72f7b86940a74207a2c8a976d1e397d5fa2
+PKG_HASH:=6c33f4878865f1e33a724677e9c03a9884991f8a2edd55133121ee3371ab95f5
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-binary-$(PKG_VERSION)
 
@@ -36,7 +36,9 @@ define Package/$(PKG_NAME)/description
   Quickstart is a dashboard & user guide
 endef
 
-
+define Package/$(PKG_NAME)/conffiles
+/etc/config/quickstart
+endef
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh

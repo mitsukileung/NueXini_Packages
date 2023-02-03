@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mosdns
-PKG_VERSION:=0d995dc
+PKG_VERSION:=1d985e2
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=mosdns-$(PKG_VERSION).tar.gz
@@ -20,7 +20,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_MOSDNS_COMPRESS_GOPROXY \
 	CONFIG_MOSDNS_COMPRESS_UPX
 
-PKG_BUILD_DEPENDS:=golang/host
+PKG_BUILD_DEPENDS:=golang/host upx/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
@@ -44,7 +44,7 @@ define Package/mosdns
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
-define Package/mosdns-neo
+define Package/mosdns-v5
   $(call Package/mosdns/Default)
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
@@ -81,10 +81,10 @@ define Package/mosdns/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 endef
 
-define Package/mosdns-neo/install
+define Package/mosdns-v5/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 endef
 
 $(eval $(call GoBinPackage,mosdns))
 $(eval $(call BuildPackage,mosdns))
-$(eval $(call BuildPackage,mosdns-neo))
+$(eval $(call BuildPackage,mosdns-v5))

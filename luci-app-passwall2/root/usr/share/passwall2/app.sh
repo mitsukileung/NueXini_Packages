@@ -538,7 +538,7 @@ run_global() {
 		echo $default_node > $TMP_ID_PATH/global_default
 		echo $main_node > $TMP_ID_PATH/global_main
 	}
-	
+
 	if [ $PROXY_IPV6 == "1" ]; then
 		echolog "开启实验性IPv6透明代理(TProxy)，请确认您的节点及类型支持IPv6！"
 		PROXY_IPV6_UDP=1
@@ -678,7 +678,7 @@ start_crontab() {
 		echo "$t lua $APP_PATH/rule_update.lua log > /dev/null 2>&1 &" >>/etc/crontabs/root
 		echolog "配置定时任务：自动更新规则。"
 	fi
-	
+
 	TMP_SUB_PATH=$TMP_PATH/sub_crontabs
 	mkdir -p $TMP_SUB_PATH
 	for item in $(uci show ${CONFIG} | grep "=subscribe_list" | cut -d '.' -sf 2 | cut -d '=' -sf 1); do
@@ -691,7 +691,7 @@ start_crontab() {
 			echolog "配置定时任务：自动更新【$remark】订阅。"
 		fi
 	done
-	
+
 	[ -d "${TMP_SUB_PATH}" ] && {
 		for name in $(ls ${TMP_SUB_PATH}); do
 			week_update=$(echo $name | awk -F '_' '{print $1}')
@@ -741,6 +741,11 @@ boot() {
 }
 
 start() {
+	pgrep -f /tmp/etc/passwall2/bin > /dev/null 2>&1 && {
+		echolog "程序已启动，无需重复启动!"
+		return 0
+	}
+
 	ulimit -n 65535
 	start_socks
 
@@ -751,8 +756,14 @@ start() {
 			run_global
 			source $APP_PATH/iptables.sh start
 			source $APP_PATH/helper_dnsmasq.sh logic_restart
+			bridge_nf_ipt=$(sysctl -e -n net.bridge.bridge-nf-call-iptables)
+			echo -n $bridge_nf_ipt > $TMP_PATH/bridge_nf_ipt
 			sysctl -w net.bridge.bridge-nf-call-iptables=0 >/dev/null 2>&1
-			[ "$PROXY_IPV6" == "1" ] && sysctl -w net.bridge.bridge-nf-call-ip6tables=0 >/dev/null 2>&1
+			[ "$PROXY_IPV6" == "1" ] && {
+				bridge_nf_ip6t=$(sysctl -e -n net.bridge.bridge-nf-call-ip6tables)
+				echo -n $bridge_nf_ip6t > $TMP_PATH/bridge_nf_ip6t
+				sysctl -w net.bridge.bridge-nf-call-ip6tables=0 >/dev/null 2>&1
+			}
 		fi
 	}
 	start_crontab
@@ -770,10 +781,11 @@ stop() {
 	stop_crontab
 	source $APP_PATH/helper_dnsmasq.sh del
 	source $APP_PATH/helper_dnsmasq.sh restart no_log=1
+	[ -s "$TMP_PATH/bridge_nf_ipt" ] && sysctl -w net.bridge.bridge-nf-call-iptables=$(cat $TMP_PATH/bridge_nf_ipt) >/dev/null 2>&1
+	[ -s "$TMP_PATH/bridge_nf_ip6t" ] && sysctl -w net.bridge.bridge-nf-call-ip6tables=$(cat $TMP_PATH/bridge_nf_ip6t) >/dev/null 2>&1
 	rm -rf ${TMP_PATH}
 	rm -rf /tmp/lock/${CONFIG}_script.lock
 	echolog "清空并关闭相关程序和缓存完成。"
-	/etc/init.d/sysctl restart
 	exit 0
 }
 

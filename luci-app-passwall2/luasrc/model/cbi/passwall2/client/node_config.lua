@@ -15,7 +15,8 @@ local ss_encrypt_method_list = {
 
 local ss_rust_encrypt_method_list = {
     "plain", "none",
-    "aes-128-gcm", "aes-256-gcm", "chacha20-ietf-poly1305"
+    "aes-128-gcm", "aes-256-gcm", "chacha20-ietf-poly1305",
+    "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm", "2022-blake3-chacha8-poly1305", "2022-blake3-chacha20-poly1305"
 }
 
 local ssr_encrypt_method_list = {
@@ -105,6 +106,7 @@ protocol:value("http", translate("HTTP"))
 protocol:value("socks", translate("Socks"))
 protocol:value("shadowsocks", translate("Shadowsocks"))
 protocol:value("trojan", translate("Trojan"))
+protocol:value("wireguard", translate("WireGuard"))
 protocol:value("_balancing", translate("Balancing"))
 protocol:value("_shunt", translate("Shunt"))
 protocol:depends("type", "V2ray")
@@ -172,6 +174,9 @@ if #nodes_table > 0 then
     end
 end
 
+dialerProxy = s:option(Flag, "dialerProxy", translate("dialerProxy"))
+dialerProxy:depends({ type = "Xray", protocol = "_shunt"})
+
 domainStrategy = s:option(ListValue, "domainStrategy", translate("Domain Strategy"))
 domainStrategy:value("AsIs")
 domainStrategy:value("IPIfNonMatch")
@@ -238,6 +243,7 @@ address:depends({ type = "Xray", protocol = "http" })
 address:depends({ type = "Xray", protocol = "socks" })
 address:depends({ type = "Xray", protocol = "shadowsocks" })
 address:depends({ type = "Xray", protocol = "trojan" })
+address:depends({ type = "Xray", protocol = "wireguard" })
 
 --[[
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
@@ -282,6 +288,7 @@ port:depends({ type = "Xray", protocol = "http" })
 port:depends({ type = "Xray", protocol = "socks" })
 port:depends({ type = "Xray", protocol = "shadowsocks" })
 port:depends({ type = "Xray", protocol = "trojan" })
+port:depends({ type = "Xray", protocol = "wireguard" })
 
 username = s:option(Value, "username", translate("Username"))
 username:depends("type", "Naiveproxy")
@@ -487,6 +494,13 @@ xtls.default = 0
 xtls:depends({ type = "Xray", protocol = "vless", tls = true })
 xtls:depends({ type = "Xray", protocol = "trojan", tls = true })
 
+tlsflow = s:option(Value, "tlsflow", translate("flow"))
+tlsflow.default = ""
+tlsflow:value("", translate("Disable"))
+tlsflow:value("xtls-rprx-vision")
+tlsflow:value("xtls-rprx-vision-udp443")
+tlsflow:depends({ type = "Xray", protocol = "vless", tls = true , xtls = false })
+
 flow = s:option(Value, "flow", translate("flow"))
 flow.default = "xtls-rprx-direct"
 flow:value("xtls-rprx-origin")
@@ -523,6 +537,7 @@ xray_fingerprint:value("safari")
 xray_fingerprint:value("randomized")
 xray_fingerprint.default = "disable"
 xray_fingerprint:depends({ type = "Xray", tls = true, xtls = false })
+xray_fingerprint:depends({ type = "Xray", tls = true, xtls = true })
 function xray_fingerprint.cfgvalue(self, section)
 	return m:get(section, "fingerprint")
 end
@@ -557,6 +572,26 @@ ss_transport:value("h2+ws", "HTTP/2 & WebSocket")
 ss_transport:depends({ type = "V2ray", protocol = "shadowsocks" })
 ss_transport:depends({ type = "Xray", protocol = "shadowsocks" })
 ]]--
+
+wireguard_public_key = s:option(Value, "wireguard_public_key", translate("Public Key"))
+wireguard_public_key:depends({ type = "Xray", protocol = "wireguard" })
+
+wireguard_secret_key = s:option(Value, "wireguard_secret_key", translate("Private Key"))
+wireguard_secret_key:depends({ type = "Xray", protocol = "wireguard" })
+
+wireguard_preSharedKey = s:option(Value, "wireguard_preSharedKey", translate("Pre shared key"))
+wireguard_preSharedKey:depends({ type = "Xray", protocol = "wireguard" })
+
+wireguard_local_address = s:option(DynamicList, "wireguard_local_address", translate("Local Address"))
+wireguard_local_address:depends({ type = "Xray", protocol = "wireguard" })
+
+wireguard_mtu = s:option(Value, "wireguard_mtu", translate("MTU"))
+wireguard_mtu.default = "1420"
+wireguard_mtu:depends({ type = "Xray", protocol = "wireguard" })
+
+wireguard_keepAlive = s:option(Value, "wireguard_keepAlive", translate("Keep Alive"))
+wireguard_keepAlive.default = "0"
+wireguard_keepAlive:depends({ type = "Xray", protocol = "wireguard" })
 
 -- [[ TCP部分 ]]--
 
